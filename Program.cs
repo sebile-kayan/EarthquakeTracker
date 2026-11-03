@@ -15,6 +15,7 @@ builder.Services.AddHttpClient<UsgsClient>(client =>
 	client.BaseAddress = new Uri("https://earthquake.usgs.gov/");
 	client.Timeout = TimeSpan.FromSeconds(15);
 });
+builder.Services.AddScoped<EarthquakeService>();
 
 var app = builder.Build();
 
@@ -33,7 +34,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}")
+	pattern: "{controller=Earthquakes}/{action=Live}/{id?}")
 	.WithStaticAssets();
 
 app.Run();

@@ -1,0 +1,35 @@
+﻿@model PagedResult<Earthquake>
+@{
+    ViewData["Title"] = "Canlı Veri";
+}
+
+<h2>Canlı Veri</h2>
+
+<div class="alert alert-info">
+    Bu veri veritabanından değil, doğrudan USGS'den geliyor.
+    Toplam: <strong>@Model.TotalCount</strong> deprem
+</div>
+
+<table class="table table-sm table-hover">
+    <thead>
+        <tr>
+            <th>Zaman (TR)</th>
+            <th>Yer</th>
+            <th class="text-end">Büyüklük</th>
+            <th class="text-end">Derinlik (km)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var earthquake in Model.Items)
+        {
+            <tr class="@(earthquake.Magnitude >= 4.5 ? "table-danger" : "")">
+                <td>@earthquake.OccurredAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@earthquake.Place</td>
+                <td class="text-end">@earthquake.Magnitude.ToString("0.0")</td>
+                <td class="text-end">@earthquake.DepthKm.ToString("0.0")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<partial name="_Pagination" model="Model" />

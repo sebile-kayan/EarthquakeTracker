@@ -1,0 +1,32 @@
+﻿@model IPagedResult
+@{
+    // Adresteki tüm parametreleri (filtreleri) koru, sadece page'i değiştir
+    Dictionary<string, string> RouteFor(int page)
+    {
+        var values = Context.Request.Query
+            .Where(q => !string.Equals(q.Key, "page", StringComparison.OrdinalIgnoreCase))
+            .ToDictionary(q => q.Key, q => q.Value.ToString());
+
+        values["page"] = page.ToString();
+        return values;
+    }
+}
+
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link" asp-all-route-data="RouteFor(Model.Page - 1)">Önceki</a>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">@Model.Page / @Model.TotalPages</span>
+            </li>
+
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link" asp-all-route-data="RouteFor(Model.Page + 1)">Sonraki</a>
+            </li>
+        </ul>
+    </nav>
+}

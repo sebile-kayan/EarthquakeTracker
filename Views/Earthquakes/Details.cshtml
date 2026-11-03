@@ -1,0 +1,74 @@
+﻿@using System.Globalization
+@model Earthquake
+@{
+    ViewData["Title"] = "Deprem Detayı";
+
+    // Koordinatlar adreste her zaman nokta ile yazılmalı (37.79), virgülle değil (37,79)
+    var latitude = Model.Latitude.ToString(CultureInfo.InvariantCulture);
+    var longitude = Model.Longitude.ToString(CultureInfo.InvariantCulture);
+
+    var mapUrl = $"https://www.google.com/maps?q={latitude},{longitude}";
+    var usgsUrl = $"https://earthquake.usgs.gov/earthquakes/eventpage/{Model.ExternalId}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">@Model.Place</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">← Listeye Dön</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table">
+            <tr>
+                <th>Büyüklük</th>
+                <td>
+                    <span class="badge fs-6 @(Model.Magnitude >= 4.5 ? "bg-danger" : "bg-secondary")">
+                        @Model.Magnitude.ToString("0.0")
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <th>Derinlik</th>
+                <td>@Model.DepthKm.ToString("0.0") km</td>
+            </tr>
+            <tr>
+                <th>Olduğu zaman (TR)</th>
+                <td>@Model.OccurredAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm:ss")</td>
+            </tr>
+            <tr>
+                <th>Enlem / Boylam</th>
+                <td>@latitude, @longitude</td>
+            </tr>
+            <tr>
+                <th>Sisteme kaydedildiği zaman (TR)</th>
+                <td class="text-muted">@Model.CreatedAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm:ss")</td>
+            </tr>
+            <tr>
+                <th>USGS kimliği</th>
+                <td><code>@Model.ExternalId</code></td>
+            </tr>
+        </table>
+
+        <a href="@mapUrl" target="_blank" class="btn btn-primary">Haritada Aç</a>
+        <a href="@usgsUrl" target="_blank" class="btn btn-outline-primary">USGS'de Gör</a>
+    </div>
+
+    <div class="col-md-6">
+        <h5>Uyarı</h5>
+
+        @if (Model.Alert != null)
+        {
+            <div class="alert @(Model.Alert.IsRead ? "alert-secondary" : "alert-danger")">
+                <strong>@Model.Alert.Message</strong><br />
+                <small>
+                    @Model.Alert.CreatedAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm")
+                    · @(Model.Alert.IsRead ? "Okundu" : "Okunmadı")
+                </small>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Bu deprem için uyarı oluşturulmamış.</p>
+        }
+    </div>
+</div>
