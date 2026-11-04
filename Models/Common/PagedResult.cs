@@ -2,7 +2,7 @@
 
 public static class PagingDefaults
 {
-	public const int PageSize = 2;
+	public const int PageSize = 20;
 }
 
 // Partial view'ın T'yi bilmeden kullanabileceği ortak bilgiler

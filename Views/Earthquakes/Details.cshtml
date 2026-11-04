@@ -22,7 +22,7 @@
             <tr>
                 <th>Büyüklük</th>
                 <td>
-                    <span class="badge fs-6 @(Model.Magnitude >= 4.5 ? "bg-danger" : "bg-secondary")">
+                    <span class="badge fs-6 @(Model.Magnitude >= AlertSettings.Value.MinMagnitude ? "bg-danger" : "bg-secondary")">
                         @Model.Magnitude.ToString("0.0")
                     </span>
                 </td>

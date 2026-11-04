@@ -4,8 +4,12 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Depremler</h2>
-
+    <div>
+        <h2 class="mb-0">Depremler</h2>
+        <small class="text-muted">
+            Otomatik yenileniyor · Son yenileme: @DateTime.UtcNow.ToTurkeyTime().ToString("HH:mm:ss")
+        </small>
+    </div>
     <form asp-action="Sync" method="post">
         <button type="submit" class="btn btn-primary">Şimdi Güncelle</button>
     </form>
@@ -42,7 +46,7 @@
     <tbody>
         @foreach (var earthquake in Model.Result.Items)
         {
-            <tr class="@(earthquake.Magnitude >= 4.5 ? "table-danger" : "")">
+            <tr class="@(earthquake.Magnitude >= AlertSettings.Value.MinMagnitude ? "table-danger" : "")">
                 <td>@earthquake.OccurredAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm")</td>
                 <td>@earthquake.Place</td>
                 <td class="text-end">@earthquake.Magnitude.ToString("0.0")</td>
@@ -56,3 +60,16 @@
 </table>
 
 <partial name="_Pagination" model="Model.Result" />
+
+@section Scripts {
+    <script>
+        // Her 60 saniyede sayfayı yenile; sekme arka plandaysa yenileme
+        const refreshSeconds = 60;
+
+        setInterval(() => {
+            if (document.visibilityState === "visible") {
+                location.reload();
+            }
+        }, refreshSeconds * 1000);
+    </script>
+}

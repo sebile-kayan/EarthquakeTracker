@@ -1,0 +1,87 @@
+﻿@model PagedResult<Alert>
+@{
+    ViewData["Title"] = "Uyarılar";
+
+    var onlyUnread = ViewData["OnlyUnread"] is true;
+
+    // Formlar işlemden sonra bu adrese geri dönecek
+    var currentUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Uyarılar</h2>
+
+    <form asp-action="MarkAllAsRead" method="post">
+        <input type="hidden" name="returnUrl" value="@currentUrl" />
+        <button type="submit" class="btn btn-outline-secondary">Tümünü okundu yap</button>
+    </form>
+</div>
+
+<!-- Filtre -->
+<ul class="nav nav-pills mb-3">
+    <li class="nav-item">
+        <a class="nav-link @(onlyUnread ? "" : "active")" asp-action="Index">Tümü</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(onlyUnread ? "active" : "")" asp-action="Index" asp-route-onlyUnread="true">Sadece okunmamışlar</a>
+    </li>
+</ul>
+
+<p class="text-muted">Toplam @Model.TotalCount uyarı</p>
+
+@if (Model.TotalCount == 0)
+{
+    <div class="alert alert-light">Gösterilecek uyarı yok.</div>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Deprem zamanı (TR)</th>
+                <th>Uyarı</th>
+                <th class="text-end">Büyüklük</th>
+                <th>Durum</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var alert in Model.Items)
+            {
+                <tr class="@(alert.IsRead ? "text-muted" : "fw-bold")">
+                    <td>@alert.Earthquake.OccurredAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        <a asp-controller="Earthquakes" asp-action="Details" asp-route-id="@alert.EarthquakeId"
+                           class="@(alert.IsRead ? "link-secondary" : "link-danger")">
+                            @alert.Message
+                        </a>
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-danger">@alert.Earthquake.Magnitude.ToString("0.0")</span>
+                    </td>
+                    <td>
+                        @if (alert.IsRead)
+                        {
+                            <span class="badge bg-secondary">Okundu</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Okunmadı</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        @if (!alert.IsRead)
+                        {
+                            <form asp-action="MarkAsRead" asp-route-id="@alert.Id" method="post" class="d-inline">
+                                <input type="hidden" name="returnUrl" value="@currentUrl" />
+                                <button type="submit" class="btn btn-sm btn-outline-success">Okundu</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <partial name="_Pagination" model="Model" />
+}

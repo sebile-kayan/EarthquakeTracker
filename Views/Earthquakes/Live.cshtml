@@ -6,7 +6,7 @@
 <h2>Canlı Veri</h2>
 
 <div class="alert alert-info">
-    Bu veri veritabanından değil, doğrudan USGS'den geliyor.
+    Bu veri veritabanından değil, doğrudan USGS'den geliyor (son 24 saat).
     Toplam: <strong>@Model.TotalCount</strong> deprem
 </div>
 
@@ -22,7 +22,8 @@
     <tbody>
         @foreach (var earthquake in Model.Items)
         {
-            <tr class="@(earthquake.Magnitude >= 4.5 ? "table-danger" : "")">
+            //Alertsettings _viewimports'tan geliyor'
+            <tr class="@(earthquake.Magnitude >= AlertSettings.Value.MinMagnitude ? "table-danger" : "")">
                 <td>@earthquake.OccurredAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm")</td>
                 <td>@earthquake.Place</td>
                 <td class="text-end">@earthquake.Magnitude.ToString("0.0")</td>
