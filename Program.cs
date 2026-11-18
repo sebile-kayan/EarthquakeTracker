@@ -58,7 +58,7 @@ var jobOptions = app.Services.GetRequiredService<IOptions<JobOptions>>().Value;
 var recurringJobs = app.Services.GetRequiredService<IRecurringJobManager>();
 
 recurringJobs.AddOrUpdate<FetchEarthquakesJob>(
-	"fetch-earthquakes",//job un adı0
+	"fetch-earthquakes",//job un adı
 	job => job.RunAsync(null, CancellationToken.None), //RunAsync jobu çalışacak
 	jobOptions.FetchEarthquakesCron);
 
