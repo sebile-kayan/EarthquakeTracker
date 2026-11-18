@@ -4,7 +4,7 @@ using Hangfire.Server;
 
 namespace EarthquakeTracker.Jobs;
 
-// USGS'den depremleri çekip yenileri kaydeden arka plan job'ı.
+// USGS'den depremleri çekip yenileri kaydeden arka plan job'ı.“Ne zaman” değil “ne yapılacak” sorusunun cevabı. Hangfire: “Ne zaman ve hangi thread’de” sorusunu çözer
 // Kim çağırırsa çağırsın (buton, zamanlayıcı) aynı iş yapılır.
 // Bitince arkasından CheckAlertsJob çalışır.
 public class FetchEarthquakesJob

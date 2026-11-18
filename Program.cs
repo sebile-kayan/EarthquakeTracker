@@ -17,7 +17,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
 	options.UseSqlServer(connectionString));
 
-// ---------- Ayarlar ----------
+// ---------- Ayarlar ----------appsettings.json(Configure) bölümleri (Usgs, Alert, Job) UsgsOptions, AlertOptions, JobOptions sınıflarına bağlanır
 builder.Services.Configure<UsgsOptions>(
 	builder.Configuration.GetSection(UsgsOptions.SectionName));
 

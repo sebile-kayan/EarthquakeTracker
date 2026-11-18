@@ -1,6 +1,6 @@
 ﻿namespace EarthquakeTracker.Options;
 
-public class UsgsOptions  // appsetting.json a uygun sectionname
+public class UsgsOptions  // appsetting.json a uygun sectionname, Ayar taşır
 {
 	public const string SectionName = "Usgs";
 
