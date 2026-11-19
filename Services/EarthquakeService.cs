@@ -29,8 +29,8 @@ public class EarthquakeService
 		var incomingEarthquakes = features
 			.Where(f => f.Properties.Magnitude.HasValue)
 			.Select(UsgsMapper.ToEarthquake)
+			.DistinctBy(e => e.ExternalId)   // aynı id iki kez gelirse biri kalsın
 			.ToList();
-
 		if (incomingEarthquakes.Count == 0)
 		{
 			return 0;
@@ -86,9 +86,34 @@ public class EarthquakeService
 		{
 			Result = result,
 			MinMagnitude = minMagnitude,
-			Place = place
+			Place = place,
+			Summary = await GetSummaryAsync(cancellationToken)
 		};
 	}
+	// Özet kartları için: son 24 saat sayısı, en büyük deprem, okunmamış uyarı, toplam kayıt
+	private async Task<EarthquakeSummary> GetSummaryAsync(CancellationToken cancellationToken)
+	{
+		var since = DateTime.UtcNow.AddHours(-24);
+
+		var last24Hours = _db.Earthquakes
+			.AsNoTracking()
+			.Where(e => e.OccurredAtUtc >= since);
+
+		var strongest = await last24Hours
+			.OrderByDescending(e => e.Magnitude)
+			.Select(e => new { e.Magnitude, e.Place })
+			.FirstOrDefaultAsync(cancellationToken);
+
+		return new EarthquakeSummary
+		{
+			Last24HoursCount = await last24Hours.CountAsync(cancellationToken),
+			Last24HoursMaxMagnitude = strongest?.Magnitude,
+			Last24HoursMaxPlace = strongest?.Place,
+			UnreadAlertCount = await _db.Alerts.CountAsync(a => !a.IsRead, cancellationToken),
+			TotalCount = await _db.Earthquakes.CountAsync(cancellationToken)
+		};
+	}
+
 
 	public async Task<Earthquake?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
 	{
@@ -96,5 +121,21 @@ public class EarthquakeService
 			.AsNoTracking()
 			.Include(e => e.Alert)
 			.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+	}
+
+	// retentionDays günden eski depremleri siler (uyarıları cascade ile birlikte gider). Silinen sayıyı döner.
+	public async Task<int> DeleteOlderThanAsync(int retentionDays, CancellationToken cancellationToken = default)
+	{
+		var cutoff = DateTime.UtcNow.AddDays(-retentionDays);
+
+		var deletedCount = await _db.Earthquakes
+			.Where(e => e.OccurredAtUtc < cutoff)
+			.ExecuteDeleteAsync(cancellationToken);
+
+		_logger.LogInformation(
+			"{DeletedCount} eski deprem silindi ({RetentionDays} günden eski).",
+			deletedCount, retentionDays);
+
+		return deletedCount;
 	}
 }

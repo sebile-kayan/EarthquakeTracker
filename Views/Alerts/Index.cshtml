@@ -57,7 +57,7 @@ else
                         </a>
                     </td>
                     <td class="text-end">
-                        <span class="badge bg-danger">@alert.Earthquake.Magnitude.ToString("0.0")</span>
+                        <span class="@MagnitudeHelper.BadgeClass(alert.Earthquake.Magnitude)">@alert.Earthquake.Magnitude.ToString("0.0")</span>
                     </td>
                     <td>
                         @if (alert.IsRead)

@@ -9,4 +9,5 @@ public class EarthquakeListViewModel
 
 	public double? MinMagnitude { get; set; }
 	public string? Place { get; set; }
+	public EarthquakeSummary Summary { get; set; } = new();
 }

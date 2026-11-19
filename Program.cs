@@ -41,6 +41,7 @@ builder.Services.AddScoped<EarthquakeService>();
 builder.Services.AddScoped<AlertService>();
 builder.Services.AddScoped<FetchEarthquakesJob>();
 builder.Services.AddScoped<CheckAlertsJob>();
+builder.Services.AddScoped<CleanupOldEarthquakesJob>();
 
 // ---------- Hangfire ----------
 builder.Services.AddHangfire(config => config
@@ -53,7 +54,11 @@ builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 
-// ---------- Recurring job'lar ----------
+/*
+NOT: Tek seferlik butonla tetiklenen joblar controllerda duruyor çünkü kullanıcıların işlemi ile çalışıyor.
+Ama recurring job zamana göre çalışır kullanıcı etkisi gerekmez program.cs uygulama açılırken bir kez çalışır ve zaman kuralları kaydolmuş olur 
+ ---------- Recurring job'lar ----------
+*/
 var jobOptions = app.Services.GetRequiredService<IOptions<JobOptions>>().Value;
 var recurringJobs = app.Services.GetRequiredService<IRecurringJobManager>();
 
@@ -62,6 +67,14 @@ recurringJobs.AddOrUpdate<FetchEarthquakesJob>(
 	job => job.RunAsync(null, CancellationToken.None), //RunAsync jobu çalışacak
 	jobOptions.FetchEarthquakesCron);
 
+recurringJobs.AddOrUpdate<CleanupOldEarthquakesJob>(
+	"cleanup-old-earthquakes",
+	job => job.RunAsync(CancellationToken.None),
+	jobOptions.CleanupCron,
+	new RecurringJobOptions
+	{
+		TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul")
+	});
 // ---------- Middleware ----------
 if (!app.Environment.IsDevelopment())
 {

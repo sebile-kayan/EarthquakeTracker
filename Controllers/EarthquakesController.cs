@@ -68,7 +68,7 @@ public class EarthquakesController : Controller
 	}
 
 	// POST/Earthquakes/Sync    Yeni deprem ise depremi usgsden çeker ve USGS’den alıp DB’ye yazabilmemizi sağlar
-	// Deprem çekme işini Hangfire kuyruğuna atar ve hemen döner.
+	// Deprem çekme işini Hangfire kuyruğuna atar ve hemen döner. Şimdi güncelle butonu ile tetikleniyor.
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	public IActionResult Sync()

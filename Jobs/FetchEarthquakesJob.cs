@@ -23,6 +23,7 @@ public class FetchEarthquakesJob
 		_logger = logger;
 	}
 
+	[DisableConcurrentExecution(timeoutInSeconds: 120)] //Jobun çakışmasını engeller buton ile dakikalık job aynı anda aynı veri eklemesin diye
 	public async Task<int> RunAsync(PerformContext? context, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Deprem çekme job'ı başladı.");

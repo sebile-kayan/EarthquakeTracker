@@ -15,6 +15,59 @@
     </form>
 </div>
 
+<!-- Özet kartları -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card summary-card h-100">
+            <div class="card-body">
+                <div class="summary-label">Son 24 saat</div>
+                <div class="summary-value">@Model.Summary.Last24HoursCount</div>
+                <small class="text-muted">deprem</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card summary-card h-100">
+            <div class="card-body">
+                <div class="summary-label">En büyük (24 saat)</div>
+                @if (Model.Summary.Last24HoursMaxMagnitude is double max)
+                {
+                    <div class="summary-value">@max.ToString("0.0")</div>
+                    <small class="text-muted">@Model.Summary.Last24HoursMaxPlace</small>
+                }
+                else
+                {
+                    <div class="summary-value">-</div>
+                    <small class="text-muted">kayıt yok</small>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card summary-card h-100">
+            <div class="card-body">
+                <div class="summary-label">Okunmamış uyarı</div>
+                <div class="summary-value @(Model.Summary.UnreadAlertCount > 0 ? "text-danger" : "")">
+                    @Model.Summary.UnreadAlertCount
+                </div>
+                <a asp-controller="Alerts" asp-action="Index" asp-route-onlyUnread="true" class="small">Uyarılara git</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card summary-card h-100">
+            <div class="card-body">
+                <div class="summary-label">Toplam kayıt</div>
+                <div class="summary-value">@Model.Summary.TotalCount</div>
+                <small class="text-muted">veritabanında</small>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Filtre formu -->
 <form asp-action="Index" method="get" class="row g-2 mb-3">
     <div class="col-auto">
@@ -49,7 +102,9 @@
             <tr class="@(earthquake.Magnitude >= AlertSettings.Value.MinMagnitude ? "table-danger" : "")">
                 <td>@earthquake.OccurredAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm")</td>
                 <td>@earthquake.Place</td>
-                <td class="text-end">@earthquake.Magnitude.ToString("0.0")</td>
+                <td class="text-end">
+                    <span class="@MagnitudeHelper.BadgeClass(earthquake.Magnitude)">@earthquake.Magnitude.ToString("0.0")</span>
+                </td>
                 <td class="text-end">@earthquake.DepthKm.ToString("0.0")</td>
                 <td class="text-end">
                     <a asp-action="Details" asp-route-id="@earthquake.Id" class="btn btn-sm btn-outline-primary">Detay</a>

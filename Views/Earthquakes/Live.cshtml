@@ -26,7 +26,9 @@
             <tr class="@(earthquake.Magnitude >= AlertSettings.Value.MinMagnitude ? "table-danger" : "")">
                 <td>@earthquake.OccurredAtUtc.ToTurkeyTime().ToString("dd.MM.yyyy HH:mm")</td>
                 <td>@earthquake.Place</td>
-                <td class="text-end">@earthquake.Magnitude.ToString("0.0")</td>
+                <td class="text-end">
+                    <span class="@MagnitudeHelper.BadgeClass(earthquake.Magnitude)">@earthquake.Magnitude.ToString("0.0")</span>
+                </td>
                 <td class="text-end">@earthquake.DepthKm.ToString("0.0")</td>
             </tr>
         }

@@ -29,3 +29,45 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* Büyüklük rozetleri: <4 yeşil, 4-5 sarı, 5-6 turuncu, 6+ kırmızı */
+.mag-badge {
+    display: inline-block;
+    min-width: 3rem;
+    padding: 0.3em 0.6em;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-align: center;
+    color: #fff;
+}
+
+.mag-low {
+    background-color: #198754;
+}
+
+.mag-moderate {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.mag-strong {
+    background-color: #fd7e14;
+}
+
+.mag-major {
+    background-color: #dc3545;
+}
+
+/* Özet kartları */
+.summary-card .summary-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.summary-card .summary-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--bs-secondary-color);
+}
